@@ -17,7 +17,7 @@ class GildedRoseTest {
     @Test
     public void qualityIncreasesOverTimeForAgedBrie() {
         // GIVEN
-        Item item = new Item(GildedRose.AGED_BRIE, 12, 3);
+        Item item = new Item("Aged Brie", 12, 3);
         GildedRose gildedRose = new GildedRose(new Item[]{item});
         //WHEN
         gildedRose.updateQuality();
@@ -29,7 +29,44 @@ class GildedRoseTest {
         assertEquals(6, item.quality);
         gildedRose.updateQuality();
         assertEquals(7, item.quality);
+        gildedRose.updateQuality();
+        assertEquals(8, item.quality);
+        gildedRose.updateQuality();
+        assertEquals(9, item.quality);
     }
+
+    @Test
+    public void qualityIncreasesTwiceWhenSellOutForAgedBrie() {
+        // GIVEN
+        Item item = new Item("Aged Brie", 0, 3);
+        GildedRose gildedRose = new GildedRose(new Item[]{item});
+
+        gildedRose.updateQuality();
+        assertEquals(5, item.quality);
+        gildedRose.updateQuality();
+        assertEquals(7, item.quality);
+
+    }
+
+//    @Test
+//    public void qualityDecreasesOverTimeForConjured() {
+//        Item item = new Item("Conjured Milk", 5, 5);
+//        GildedRose gildedRose = new GildedRose(new Item[]{item});
+//        gildedRose.updateQuality();
+//
+//        assertEquals(4, gildedRose.items[0].sellIn);
+//        assertEquals(3, gildedRose.items[0].quality);
+//    }
+
+//    @Test
+//    public void qualityDecreasesOverTimeTwiceForConjuredAfterExpiring() {
+//        Item item = new Item("Conjured Milk", 0, 5);
+//        GildedRose gildedRose = new GildedRose(new Item[]{item});
+//        gildedRose.updateQuality();
+//
+//        assertEquals(-1, gildedRose.items[0].sellIn);
+//        assertEquals(1, gildedRose.items[0].quality);
+//    }
 
     @Test
     public void qualityDecreasesMoreQuicklyAfterSellByDateForUnknownThings() {
@@ -42,6 +79,25 @@ class GildedRoseTest {
         assertEquals(3, item.quality);
         gildedRose.updateQuality();
         assertEquals(1, item.quality);
+        gildedRose.updateQuality();
+        assertEquals(0, item.quality);
+    }
+
+    @Test
+    public void qualityDecreasesAfterSellByDateForUnknownThingsButNeverNegative() {
+        Item item = new Item("foo", 1, 6);
+        GildedRose gildedRose = new GildedRose(new Item[]{item});
+
+        gildedRose.updateQuality();
+        assertEquals(5, item.quality);
+        gildedRose.updateQuality();
+        assertEquals(3, item.quality);
+        gildedRose.updateQuality();
+        assertEquals(1, item.quality);
+        gildedRose.updateQuality();
+        assertEquals(0, item.quality);
+        gildedRose.updateQuality();
+        assertEquals(0, item.quality);
         gildedRose.updateQuality();
         assertEquals(0, item.quality);
     }
@@ -62,11 +118,55 @@ class GildedRoseTest {
     }
 
     @Test
-    public void sellInDecreasesEveryDayForMostItems() {
-        sellInDecreasesEveryDayForItem(new Item("foo", 2, 0));
-        sellInDecreasesEveryDayForItem(new Item(GildedRose.BACKSTAGE_PASSES, 2, 0));
-        sellInDecreasesEveryDayForItem(new Item(GildedRose.AGED_BRIE, 2, 0));
-        sellInDecreasesEveryDayForItem(new Item(GildedRose.CONJURED, 2, 0));
+    public void sellInDecreasesEveryDayForUnknownItem() {
+        Item item = new Item("foo", 2, 0);
+        GildedRose gildedRose = new GildedRose(new Item[]{item});
+
+        gildedRose.updateQuality();
+        assertEquals(1, item.sellIn);
+        gildedRose.updateQuality();
+        assertEquals(0, item.sellIn);
+        gildedRose.updateQuality();
+        assertEquals(-1, item.sellIn);
+    }
+
+    @Test
+    public void sellInDecreasesEveryDayForConjuredItem() {
+        Item item = new Item("Conjured Milk", 2, 0);
+        GildedRose gildedRose = new GildedRose(new Item[]{item});
+
+        gildedRose.updateQuality();
+        assertEquals(1, item.sellIn);
+        gildedRose.updateQuality();
+        assertEquals(0, item.sellIn);
+        gildedRose.updateQuality();
+        assertEquals(-1, item.sellIn);
+    }
+
+    @Test
+    public void sellInDecreasesEveryDayForAgedBrieItem() {
+        Item item = new Item("Aged Brie", 2, 0);
+        GildedRose gildedRose = new GildedRose(new Item[]{item});
+
+        gildedRose.updateQuality();
+        assertEquals(1, item.sellIn);
+        gildedRose.updateQuality();
+        assertEquals(0, item.sellIn);
+        gildedRose.updateQuality();
+        assertEquals(-1, item.sellIn);
+    }
+
+    @Test
+    public void sellInDecreasesEveryDayForBackstageItem() {
+        Item item = new Item("Backstage passes to a TAFKAL80ETC concert", 2, 0);
+        GildedRose gildedRose = new GildedRose(new Item[]{item});
+
+        gildedRose.updateQuality();
+        assertEquals(1, item.sellIn);
+        gildedRose.updateQuality();
+        assertEquals(0, item.sellIn);
+        gildedRose.updateQuality();
+        assertEquals(-1, item.sellIn);
     }
 
     @Test
@@ -80,17 +180,6 @@ class GildedRoseTest {
         assertEquals(2, item.sellIn);
         gildedRose.updateQuality();
         assertEquals(2, item.sellIn);
-    }
-
-    private void sellInDecreasesEveryDayForItem(Item item) {
-        GildedRose gildedRose = new GildedRose(new Item[]{item});
-
-        gildedRose.updateQuality();
-        assertEquals(1, item.sellIn);
-        gildedRose.updateQuality();
-        assertEquals(0, item.sellIn);
-        gildedRose.updateQuality();
-        assertEquals(-1, item.sellIn);
     }
 
 }
